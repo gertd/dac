@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6174C1BD-0408-433A-86FA-8033D51E0211}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SqlProj.Utils.Dac.Merge</RootNamespace>
+    <AssemblyName>dacmerge</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\common\CommandLine.cs">
+      <Link>Common\CommandLine.cs</Link>
+    </Compile>
+    <Compile Include="..\common\ExitCode.cs">
+      <Link>Common\ExitCode.cs</Link>
+    </Compile>
+    <Compile Include="..\common\Helpers.cs">
+      <Link>Common\Helpers.cs</Link>
+    </Compile>
+    <Compile Include="..\common\LogWriter.cs">
+      <Link>Common\LogWriter.cs</Link>
+    </Compile>
+    <Compile Include="AppArgs.cs" />
+    <Compile Include="DacMerge.cs" />
+    <Compile Include="DacMergeResource.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DacMergeResource.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="DacMergeResource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>DacMergeResource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\dacapi\dacapi.csproj">
+      <Project>{4C1E6856-9466-4115-942C-B7DC5F3F7B03}</Project>
+      <Name>dacapi</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <MSBuildCommunityTasksPath>..\.build</MSBuildCommunityTasksPath>
+  </PropertyGroup>
+  <UsingTask AssemblyFile="$(MSBuildCommunityTasksPath)\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.ILMerge" />
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+    <MakeDir Directories="$(TargetDir)merged" Condition="!Exists('$(TargetDir)merged)')" />
+    <ILMerge OutputFile="$(TargetDir)merged\$(TargetFilename)" TargetKind="$(OutputType)" TargetPlatformVersion="v4" InputAssemblies="$(TargetDir)$(TargetFilename);$(TargetDir)SqlProj.Dac.dll" CopyAttributes="true" DebugInfo="true" SearchDirectories="$(WinDir)\Microsoft.NET\Framework\v4.0.30319;$(WinDir)\Microsoft.NET\Framework\v4.0.30319\WPF" />
+    <Copy DestinationFolder="$(SolutionDir)\drop\$(Configuration)" SourceFiles="$(TargetDir)merged\$(TargetFilename)" OverwriteReadOnlyFiles="true"/>
+    <Copy DestinationFolder="$(SolutionDir)\drop\$(Configuration)" SourceFiles="$(TargetDir)merged\$(TargetName).pdb" OverwriteReadOnlyFiles="true"/>
+  </Target>
+</Project>
